@@ -1,0 +1,6 @@
+name: GuardianGolems
+version: '0.1.0'
+main: net.hyper_pigeon.guardianGolems.GuardianGolems
+api-version: '1.21'
+authors: [ HyperPigeon ]
+description: A plugin that adds loyal, guard golems to Minecraft. 
