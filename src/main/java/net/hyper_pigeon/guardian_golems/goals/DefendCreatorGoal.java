@@ -1,2 +1,3 @@
-package net.hyper_pigeon.guardian_golems.goals;public class DefendCreatorGoal {
-}
+package net.hyper_pigeon.guardian_golems.goals;
+
+public class DefendCreatorGoal { }
