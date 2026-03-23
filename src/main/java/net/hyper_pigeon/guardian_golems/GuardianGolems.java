@@ -1,5 +1,6 @@
-package net.hyper_pigeon.guardianGolems;
+package net.hyper_pigeon.guardian_golems;
 
+import net.hyper_pigeon.guardian_golems.listener.GolemListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class GuardianGolems extends JavaPlugin {

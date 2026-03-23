@@ -1,24 +1,23 @@
-package net.hyper_pigeon.guardian_golems;
+package net.hyper_pigeon.guardian_golems.listener;
 
+import net.hyper_pigeon.guardian_golems.goals.DefendCreatorGoal;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Golem;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GolemListener implements Listener {
@@ -55,56 +54,28 @@ public class GolemListener implements Listener {
                     Player creator = Bukkit.getPlayerExact(playerName);
                     if (creator == null) return;
                     golem.getPersistentDataContainer().set(creatorKey, PersistentDataType.STRING, creator.getUniqueId().toString());
+                    Bukkit.getMobGoals().addGoal(golem, 0, new DefendCreatorGoal(golem, creatorKey));
                 }
             }
         }
     }
 
-//    @EventHandler
-//    public void onGolemAdd(EntityAddToWorldEvent event) {
-//        if (!(event.getEntity() instanceof IronGolem golem)) return;
-//
-//        Location loc = golem.getLocation();
-//        for (Location pumpkinLoc : pumpkinNames.keySet()) {
-//            if (!pumpkinLoc.getWorld().equals(loc.getWorld())) continue;
-//            if (pumpkinLoc.distanceSquared(loc) <= 9) {
-//                String playerName = pumpkinNames.remove(pumpkinLoc);
-//                Player creator = Bukkit.getPlayerExact(playerName);
-//                if (creator == null) return;
-//                golem.getPersistentDataContainer().set(creatorKey, PersistentDataType.STRING, creator.getUniqueId().toString());
-//            }
-//        }
-//    }
-
-    // Iron Golem will protect creator when they are attacked or assist them when they fight.
     @EventHandler
-    public void onCreatorFight(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player victim)) return;
+    public void onEntitiesLoad(EntitiesLoadEvent event) {
+        event.getEntities().forEach(entity -> {
+            if (!(entity instanceof Golem golem)) return;
 
-        Entity attacker = event.getDamager();
+            String creator = golem.getPersistentDataContainer()
+                    .get(creatorKey, PersistentDataType.STRING);
 
-        if (!(attacker instanceof LivingEntity livingAttacker)) return;
-
-        UUID victimId = victim.getUniqueId();
-
-        for (IronGolem golem : victim.getWorld().getEntitiesByClass(IronGolem.class)) {
-            PersistentDataContainer data = golem.getPersistentDataContainer();
-
-            if ( !data.has(creatorKey, PersistentDataType.STRING)) continue;
-
-            UUID creatorId = UUID.fromString(Objects.requireNonNull(data.get(creatorKey, PersistentDataType.STRING)));
-
-            boolean attackerIsCreator = attacker.getUniqueId().equals(creatorId); 
-
-            if(creatorId.equals(victimId))
-
-            if(attacker.getUniqueId().equals(creatorId) && !creatorId.equals(victimId)) {
-                golem.setTarget(victim);
+            if (creator != null) {
+                boolean hasDefendGoal = Bukkit.getMobGoals().getGoals(golem, DefendCreatorGoal.REFERENCE_KEY)
+                        .stream()
+                        .anyMatch(goal -> goal instanceof DefendCreatorGoal);
+                if(!hasDefendGoal) {
+                    Bukkit.getMobGoals().addGoal(golem, 0, new DefendCreatorGoal(golem, creatorKey));
+                }
             }
-
-            if (!creatorId.equals(victimId)) continue;
-
-            golem.setTarget(livingAttacker);
-        }
+        });
     }
 }
