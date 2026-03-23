@@ -94,7 +94,7 @@ public class GolemListener implements Listener {
 
             UUID creatorId = UUID.fromString(Objects.requireNonNull(data.get(creatorKey, PersistentDataType.STRING)));
 
-            boolean attackerIsCreator = attacker.getUniqueId().equals(creatorId); 
+            boolean attackerIsCreator = attacker.getUniqueId().equals(creatorId); // FIXME: unused variable?
 
             if(creatorId.equals(victimId)) // FIXME: if with no block?
 
