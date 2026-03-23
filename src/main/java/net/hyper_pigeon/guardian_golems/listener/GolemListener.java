@@ -1,4 +1,4 @@
-package net.hyper_pigeon.guardian_golems;
+package net.hyper_pigeon.guardian_golems.listener;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -60,7 +60,7 @@ public class GolemListener implements Listener {
         }
     }
 
-//    @EventHandler
+//    @EventHandler // FIXME: Unused block could be entirely removed
 //    public void onGolemAdd(EntityAddToWorldEvent event) {
 //        if (!(event.getEntity() instanceof IronGolem golem)) return;
 //
@@ -94,9 +94,9 @@ public class GolemListener implements Listener {
 
             UUID creatorId = UUID.fromString(Objects.requireNonNull(data.get(creatorKey, PersistentDataType.STRING)));
 
-            boolean attackerIsCreator = attacker.getUniqueId().equals(creatorId); 
+            boolean attackerIsCreator = attacker.getUniqueId().equals(creatorId); // FIXME: unused variable?
 
-            if(creatorId.equals(victimId))
+            if(creatorId.equals(victimId)) // FIXME: if with no block?
 
             if(attacker.getUniqueId().equals(creatorId) && !creatorId.equals(victimId)) {
                 golem.setTarget(victim);
