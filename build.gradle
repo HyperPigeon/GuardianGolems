@@ -1,10 +1,10 @@
 plugins {
     id 'java'
-    id("xyz.jpenilla.run-paper") version "2.3.1"
+    id 'xyz.jpenilla.run-paper' version '3.1.0'
 }
 
 group = 'net.hyper_pigeon'
-version = '0.1.0'
+version = '0.2.0'
 
 repositories {
     mavenCentral()

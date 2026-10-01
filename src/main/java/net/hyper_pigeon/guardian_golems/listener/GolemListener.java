@@ -1,6 +1,8 @@
 package net.hyper_pigeon.guardian_golems.listener;
 
+import com.destroystokyo.paper.entity.ai.GoalKey;
 import net.hyper_pigeon.guardian_golems.goals.DefendCreatorGoal;
+import net.hyper_pigeon.guardian_golems.goals.DefendSelfGoal;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -55,6 +57,7 @@ public class GolemListener implements Listener {
                     if (creator == null) return;
                     golem.getPersistentDataContainer().set(creatorKey, PersistentDataType.STRING, creator.getUniqueId().toString());
                     Bukkit.getMobGoals().addGoal(golem, 0, new DefendCreatorGoal(golem, creatorKey));
+                    Bukkit.getMobGoals().addGoal(golem, 1, new DefendSelfGoal(golem, creatorKey));
                 }
             }
         }
@@ -69,13 +72,17 @@ public class GolemListener implements Listener {
                     .get(creatorKey, PersistentDataType.STRING);
 
             if (creator != null) {
-                boolean hasDefendGoal = Bukkit.getMobGoals().getGoals(golem, DefendCreatorGoal.REFERENCE_KEY)
-                        .stream()
-                        .anyMatch(goal -> goal instanceof DefendCreatorGoal);
-                if(!hasDefendGoal) {
+                if (!hasGoal(golem, DefendCreatorGoal.REFERENCE_KEY)) {
                     Bukkit.getMobGoals().addGoal(golem, 0, new DefendCreatorGoal(golem, creatorKey));
+                }
+                if (!hasGoal(golem, DefendSelfGoal.REFERENCE_KEY)) {
+                    Bukkit.getMobGoals().addGoal(golem, 1, new DefendSelfGoal(golem, creatorKey));
                 }
             }
         });
+    }
+
+    private boolean hasGoal(Golem golem, GoalKey<Golem> key) {
+        return !Bukkit.getMobGoals().getGoals(golem, key).isEmpty();
     }
 }
